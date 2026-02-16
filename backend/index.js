@@ -15,7 +15,14 @@ app.get("/api/", (req, res) => {
   res.json({ "API success": true });
 });
 
-const PORT = process.env.PORT || 9000;
-app.listen(PORT, () => {
-  console.log("Great! Server listening on port :: " + PORT);
-});
+const PORT = process.env.PORT || 7000;
+
+// For local development.
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(PORT, () => {
+    console.log("Great! Server listening on port :: " + PORT);
+  });
+}
+
+// Export for Vercel functions.
+module.exports = app; 
