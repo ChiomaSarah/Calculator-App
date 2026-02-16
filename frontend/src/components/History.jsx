@@ -9,7 +9,7 @@ const History = () => {
     async function getHistory() {
       try {
         const response = await fetch(
-          "http://localhost:9000/history",
+          "process.env.REACT_APP_BASE_API_URL/history",
 
           {
             method: "GET",
