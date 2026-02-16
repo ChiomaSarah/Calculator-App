@@ -2,8 +2,8 @@ require("dotenv").config();
 const express = require("express");
 const router = express.Router();
 const Operation = require("../models/operation");
+const { evaluate } = require("mathjs");
 
-// fetch history endpoint
 router.get("/history", async (req, res) => {
   try {
     const operations = await Operation.find().sort({ _id: -1 }).limit(4);
@@ -17,20 +17,31 @@ router.get("/history", async (req, res) => {
   }
 });
 
-// perform arithmetic functions endpoint
 router.post("/calculate", async (req, res) => {
   const { arithmeticFunction } = req.body;
   try {
-    const result = eval(arithmeticFunction);
+    const result = evaluate(arithmeticFunction);
     const calculation = new Operation({
       arithmeticFunction: arithmeticFunction,
       result: result,
     });
 
     await calculation.save();
+
+    // Auto-cleanup: Keep only the 10 most recent operations.
+    const threshold = await Operation.findOne()
+      .sort({ _id: -1 })
+      .skip(9)
+      .select("_id");
+
+    if (threshold) {
+      // $lt = "less than" - Deletes all operations with an _id less than the 10th newest (i.e., older records).
+      await Operation.deleteMany({ _id: { $lt: threshold._id } });
+    }
+
     return res.status(201).json({ result });
   } catch (error) {
-    return res.status(400).json({ error: "Invalid arithmetic operation" });
+    return res.status(400).json({ error: "Invalid arithmetic operation." });
   }
 });
 

@@ -24,7 +24,7 @@ export default function HistoryModal() {
   return (
     <div>
       <Button onClick={handleOpen}>
-        <img src="recent icon.jpeg" alt="history" />
+        <img src="history_icon.png" alt="history" />
       </Button>
       <Modal
         open={open}

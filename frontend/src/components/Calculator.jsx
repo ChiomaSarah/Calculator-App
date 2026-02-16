@@ -1,14 +1,13 @@
-import React, { useState } from "react";
-import Alert from "@mui/material/Alert";
+import { useState } from "react";
 import Button from "@mui/material/Button";
 import HistoryModal from "./HistoryModal";
 
-const Calculator = ({ open }) => {
+const Calculator = () => {
   const [arithmeticFunction, setArithmeticFunction] = useState("");
-
-  let [error, setError] = useState("");
+  const [error, setError] = useState("");
 
   const calculate = (value) => {
+    setError("");
     if (value === "AC") {
       setArithmeticFunction("");
     } else if (value === "DEL") {
@@ -19,45 +18,55 @@ const Calculator = ({ open }) => {
   };
 
   const handleTotal = async () => {
+    setError("");
+    if (!arithmeticFunction.trim()) {
+      setError("Please enter an expression!");
+      return;
+    }
+
     try {
-      const response = await fetch("process.env.REACT_APP_BASE_API_URL/calculate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ arithmeticFunction }),
-      });
+      const response = await fetch(
+        `${process.env.REACT_APP_BASE_API_URL}/calculate`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ arithmeticFunction }),
+        },
+      );
 
       const data = await response.json();
-      console.log(data);
-      setArithmeticFunction(data.result);
 
       if (!response.ok) {
-        throw Error(data.error);
+        throw new Error(data.error || "Aritmetic failed!");
       }
+
+      setArithmeticFunction(data.result);
     } catch (err) {
-      setError(err.message);
+      setError(err.message || "Network error... Please try again.");
     }
   };
+
+  // Transform for display symbols.
+  const displayValue = arithmeticFunction
+    .replace(/\//g, "÷")
+    .replace(/\*/g, "×");
 
   return (
     <>
       <div className="container">
-        {error && (
-          <Alert
-            severity="error"
-            variant="filled"
-            onClose={() => setError(null)}
-          >
-            {error}
-          </Alert>
-        )}
         <div id="calculator">
           <input
             type="text"
             id="output"
             placeholder="0"
-            value={arithmeticFunction}
+            value={error ? `Error: ${error}` : displayValue}
             readOnly
-          ></input>
+            style={{
+              color: error ? "#d32f2f" : "inherit",
+              textAlign: error ? "center" : "right",
+              fontSize: error ? "0.8rem" : "1.5rem",
+            }}
+          />
 
           <HistoryModal />
           <Button onClick={() => calculate("AC")}>AC</Button>

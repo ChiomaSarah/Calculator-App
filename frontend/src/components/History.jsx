@@ -9,7 +9,7 @@ const History = () => {
     async function getHistory() {
       try {
         const response = await fetch(
-          "process.env.REACT_APP_BASE_API_URL/history",
+          `${process.env.REACT_APP_BASE_API_URL}/history`,
 
           {
             method: "GET",
@@ -17,7 +17,7 @@ const History = () => {
               Accept: "application/json, text/plain, */*",
               "Content-Type": "application/json",
             },
-          }
+          },
         );
         const result = await response.json();
 
