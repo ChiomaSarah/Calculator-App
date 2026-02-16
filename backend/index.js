@@ -6,10 +6,9 @@ const apiRouter = require("./routes/api");
 
 const app = express();
 app.use(express.json());
-app.use(cors({ origin: process.env.FRONTEND_URL }));
-app.use("/", apiRouter);
-
 app.use(express.urlencoded({ extended: true }));
+app.use(cors({ origin: "*" }));
+app.use("/", apiRouter);
 
 app.get("/api/", (req, res) => {
   res.json({ "API success": true });
