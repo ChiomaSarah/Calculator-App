@@ -40,13 +40,13 @@ const Calculator = () => {
         throw new Error(data.error || "Aritmetic failed!");
       }
 
-      setArithmeticFunction(data.result);
+      setArithmeticFunction(String(data.result));
     } catch (err) {
       setError(err.message || "Network error... Please try again.");
     }
   };
 
-  // Transform for display symbols.
+  // Transform display symbols.
   const displayValue = arithmeticFunction
     .replace(/\//g, "÷")
     .replace(/\*/g, "×");
