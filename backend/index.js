@@ -6,9 +6,19 @@ const apiRouter = require("./routes/api");
 
 const app = express();
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(cors({ origin: "*" }));
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL,
+    methods: "GET,OPTIONS,PATCH,DELETE,POST,PUT",
+    allowedHeaders: "Content-Type, Authorization",
+  }),
+);
+
+// Handle OPTIONS preflight requests
+app.options("*", cors());
+
 app.use("/", apiRouter);
+app.use(express.urlencoded({ extended: true }));
 
 app.get("/api/", (req, res) => {
   res.json({ "API success": true });
