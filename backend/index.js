@@ -8,7 +8,7 @@ const app = express();
 app.use(express.json());
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL,
+    origin: "*",
     methods: "GET,OPTIONS,PATCH,DELETE,POST,PUT",
     allowedHeaders: "Content-Type, Authorization",
   }),
